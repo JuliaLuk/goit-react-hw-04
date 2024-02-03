@@ -1,8 +1,13 @@
+import toast from "react-hot-toast";
 export const SearchBox = ({ onSerch }) => {
   const HandelSubmit = (e) => {
     e.preventDefault();
-    onSerch(e.target.elements.query.value);
+    if (e.target.elements.query.value.trim() === "") {
+      toast.error("empty srting");
 
+      return;
+    }
+    onSerch(e.target.elements.query.value);
     e.target.reset();
   };
   return (
