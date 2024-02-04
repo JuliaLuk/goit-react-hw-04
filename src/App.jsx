@@ -14,13 +14,9 @@ export const App = () => {
   const [error, setError] = useState(false);
 
   const serchArticles = async (newQuery) => {
-    setQuery(newQuery);
+    setQuery(`${Date.now()}/${newQuery}`);
     setPage(1);
-    setArticles({
-      items: [],
-      loading: false,
-      error: false,
-    });
+    setArticles([]);
   };
 
   const handelLoadMore = () => {
@@ -33,15 +29,20 @@ export const App = () => {
     }
     async function fetchData() {
       try {
-        setError(false);
-        setArticles([]);
         setLoading(true);
-        const response = await axios.get(
-          `http://hn.algolia.com/api/v1/search?query=${query}&page=${page}&hitsPerPage=10`
-        );
-        setArticles(response.data.hits);
+        setError(false);
 
-        // console.log(response.data.hits);
+        const response = await axios.get(
+          `http://hn.algolia.com/api/v1/search`,
+          {
+            params: {
+              query: query.split("/")[1],
+              page,
+              hitsPerPage: 10,
+            },
+          }
+        );
+        setArticles((prevArticles) => [...prevArticles, ...response.data.hits]);
       } catch (error) {
         setError(true);
       } finally {
@@ -53,6 +54,11 @@ export const App = () => {
   return (
     <div>
       <SearchBox onSerch={serchArticles} />
+
+      {articles.length > 0 && <Articles items={articles} />}
+      {articles.length > 0 && !loading && (
+        <button onClick={handelLoadMore}>Load more</button>
+      )}
       {loading && (
         <Circles
           height="80"
@@ -65,8 +71,7 @@ export const App = () => {
         />
       )}
       {error && <b>Ooops, somethitg is wrong, please reload peage </b>}
-      {articles.length > 0 && <Articles items={articles} />}
-      <button onClick={handelLoadMore}>Load more</button>
+
       <Toaster position="top-center" />
     </div>
   );
