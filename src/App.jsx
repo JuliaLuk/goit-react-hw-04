@@ -17,7 +17,7 @@ export const App = () => {
       setArticles([]);
       setLoading(true);
       const response = await axios.get(
-        "http://hn.algolia.com/api/v1/search?query=${query}"
+        `http://hn.algolia.com/api/v1/search?query=${query}`
       );
       setArticles(response.data.hits);
 
@@ -44,7 +44,7 @@ export const App = () => {
       )}
       {error && <b>Ooops, somethitg is wrong, please reload peage </b>}
       {articles.length > 0 && <Articles items={articles} />}
-      <Toaster position="top-right" />
+      <Toaster position="top-center" />
     </div>
   );
 };
